@@ -1,4 +1,4 @@
-import { WINNER_LINES } from '../constants'
+import { WINNER_LINES, TURNS } from '../constants'
 
 export const checkForWinner = (currentBoard) => {
   for (const line of WINNER_LINES) {
@@ -17,3 +17,5 @@ export const checkForWinner = (currentBoard) => {
 export const checkDraw = (newBoard) => {
   return !newBoard.includes(null)
 }
+
+export const nextTurn = (turn) => turn === TURNS.X ? TURNS.O : TURNS.X

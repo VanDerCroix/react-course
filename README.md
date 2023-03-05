@@ -1,6 +1,6 @@
 # react-course
 
-```
+```shell
 # npm starting config
 npm init
 

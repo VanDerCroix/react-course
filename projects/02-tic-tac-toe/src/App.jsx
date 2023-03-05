@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Square } from './components/Square.jsx'
 import { TURNS } from './constants.js'
-import { checkForWinner, checkDraw } from './logic/board.js'
+import { checkForWinner, checkDraw, nextTurn } from './logic/board.js'
 import { WinnerModal } from './components/WinnerModal.jsx'
+import { GameBoard } from './components/GameBoard.jsx'
+import { saveGameToStorage, resetGameStorage } from './storage/index.js'
 import confetti from 'canvas-confetti'
 
 function App () {
@@ -21,9 +23,7 @@ function App () {
     setBoard(Array(9).fill(null))
     setTurn(TURNS.X)
     setWinner(null)
-
-    window.localStorage.removeItem('board')
-    window.localStorage.removeItem('turn')
+    resetGameStorage()
   }
 
   const updateBoard = (index) => {
@@ -32,11 +32,14 @@ function App () {
     const newBoard = Array.from(board)
     newBoard[index] = turn
     setBoard(newBoard)
-    window.localStorage.setItem('board', JSON.stringify(newBoard))
 
-    const newTurn = turn === TURNS.X ? TURNS.O : TURNS.X
+    const newTurn = nextTurn(turn)
     setTurn(newTurn)
-    window.localStorage.setItem('turn', newTurn)
+
+    saveGameToStorage({
+      board: newBoard,
+      turn: newTurn
+    })
 
     const newWinner = checkForWinner(newBoard)
     if (newWinner) {
@@ -51,21 +54,7 @@ function App () {
     <main className='board'>
       <h1>Tic Tac Toe</h1>
       <button onClick={resetGame}>Reset del juego</button>
-      <section className='game'>
-        {
-          board.map((square, index) => {
-            return (
-              <Square
-                key={index}
-                index={index}
-                updateBoard={updateBoard}
-              >
-                {square}
-              </Square>
-            )
-          })
-        }
-      </section>
+      <GameBoard board={board} updateBoard={updateBoard} />
 
       <section className='turn'>
         <Square isSelected={turn === TURNS.X}>{TURNS.X}</Square>
